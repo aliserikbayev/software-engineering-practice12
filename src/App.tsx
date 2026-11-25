@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import type { FormEvent } from "react";
 import { checkAvailability } from "./domain/availability";
 import { INITIAL_BOOKINGS, ROOM } from "./domain/fixtures";
 
@@ -7,16 +8,16 @@ function localClock(date: Date): string {
 }
 
 export default function App() {
-  const [start, setStart] = useState("10:30");
+  const [now, setNow] = useState(() => new Date());
+  const [start, setStart] = useState(() => { const next = new Date(); next.setMinutes(next.getMinutes() + 60); return localClock(next); });
   const [duration, setDuration] = useState("60");
   const [blocked, setBlocked] = useState(false);
-  const [now, setNow] = useState(() => new Date());
   const [checked, setChecked] = useState(false);
   const result = useMemo(() => checkAvailability({
     start, durationMinutes: Number(duration), now, blocked, bookings: INITIAL_BOOKINGS,
   }), [start, duration, now, blocked]);
 
-  function runCheck(event: React.FormEvent<HTMLFormElement>) {
+  function runCheck(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setChecked(true);
   }
